@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
-from app.auth import get_current_user_optional
+from app.auth import get_current_user
 from app.database import get_db
 from app.models import User
 from app.safety import SafetyError
@@ -20,9 +20,14 @@ def execute(
     payload: ExecuteRequest,
     request: Request,
     db: Session = Depends(get_db),
-    user: User | None = Depends(get_current_user_optional),
+    user: User = Depends(get_current_user),
 ) -> ExecuteResponse:
-    """Accept a natural-language DevOps command and run it through the MCP pipeline."""
+    """Accept a natural-language DevOps command and run it through the MCP pipeline.
+
+    When authentication is enabled, ``get_current_user`` requires a valid JWT.
+    In demo mode (auth disabled) it supplies the implicit system administrator,
+    preserving the original zero-login workflow.
+    """
     try:
         return execute_command(
             db,
@@ -33,4 +38,4 @@ def execute(
             ip_address=request.client.host if request.client else None,
         )
     except SafetyError as exc:
-        raise HTTPException(status_code=429, detail=str(exc))
+        raise HTTPException(status_code=429, detail=str(exc)) from exc

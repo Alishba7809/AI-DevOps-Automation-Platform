@@ -5,6 +5,7 @@ from typing import Generator
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from app.config import settings
 
@@ -12,13 +13,24 @@ from app.config import settings
 # ---------------------------------------------------------------------
 # Engine + Session factory
 # ---------------------------------------------------------------------
-engine = create_engine(
-    settings.DATABASE_URL,
-    echo=settings.DATABASE_ECHO,
-    pool_pre_ping=True,
-    pool_size=10,
-    max_overflow=20,
-)
+# PostgreSQL benefits from an explicit connection pool. SQLite (used by the
+# test suite and handy for local development) does not accept the same pool
+# arguments, so configure it separately.
+_engine_kwargs: dict = {
+    "echo": settings.DATABASE_ECHO,
+    "pool_pre_ping": True,
+}
+
+if settings.DATABASE_URL.startswith("sqlite"):
+    _engine_kwargs["connect_args"] = {"check_same_thread": False}
+    # A single shared connection keeps sqlite:///:memory: consistent across
+    # sessions during tests.
+    if ":memory:" in settings.DATABASE_URL:
+        _engine_kwargs["poolclass"] = StaticPool
+else:
+    _engine_kwargs.update(pool_size=10, max_overflow=20)
+
+engine = create_engine(settings.DATABASE_URL, **_engine_kwargs)
 
 SessionLocal = sessionmaker(
     bind=engine,

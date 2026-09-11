@@ -124,7 +124,7 @@ export default function HistoryPage() {
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs font-medium muted border-b border-slate-200 dark:border-slate-800">
+                  <tr className="text-left text-xs font-medium muted border-b border-slate-200 dark:border-white/10">
                     <th className="py-3 pl-5 pr-4">#</th>
                     <th className="py-3 pr-4">Command</th>
                     <th className="py-3 pr-4">Intent</th>
@@ -135,7 +135,7 @@ export default function HistoryPage() {
                     <th className="py-3 pr-5">Error</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-slate-100 dark:divide-white/10">
                   {filtered.map((t) => (
                     <tr
                       key={t.id}
@@ -183,7 +183,7 @@ export default function HistoryPage() {
           )}
 
           {total > 0 && (
-            <div className="px-5 py-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
+            <div className="px-5 py-3 border-t border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
               <span className="muted">
                 Page {page} of {totalPages} · {total} total tasks
               </span>

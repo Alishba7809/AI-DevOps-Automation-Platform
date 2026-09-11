@@ -64,13 +64,11 @@ export default function ToolsPage() {
     <DashboardShell title="MCP Tools">
       <div className="space-y-5">
         <div
-          className="card p-5 flex flex-col md:flex-row md:items-center gap-4 justify-between
-                     bg-gradient-to-br from-brand-50 to-white border-brand-200/60
-                     dark:from-brand-500/10 dark:to-transparent dark:border-brand-500/20"
+          className="card p-5 flex flex-col md:flex-row md:items-center gap-4 justify-between"
         >
           <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-xl bg-brand-500 text-white flex items-center justify-center shadow-glow">
-              <Wrench className="h-5 w-5" />
+            <div className="h-10 w-10 rounded-md bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center">
+              <Wrench className="h-[18px] w-[18px]" />
             </div>
             <div>
               <h2 className="font-semibold heading text-lg">Model Context Protocol Catalog</h2>
@@ -135,8 +133,8 @@ export default function ToolsPage() {
                   className="w-full text-left p-5 flex items-start gap-3"
                 >
                   <div
-                    className="h-11 w-11 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0
-                               dark:bg-brand-500/10 dark:text-brand-300"
+                    className="h-11 w-11 rounded-md bg-slate-100 text-slate-700 flex items-center justify-center shrink-0
+                               dark:bg-white/5 dark:text-slate-300"
                   >
                     <Icon className="h-5 w-5" />
                   </div>
@@ -177,7 +175,7 @@ export default function ToolsPage() {
                 </button>
 
                 {isOpen && (
-                  <div className="border-t border-slate-200 dark:border-slate-800 p-5 pt-4 space-y-2">
+                  <div className="border-t border-slate-200 dark:border-white/10 p-5 pt-4 space-y-2">
                     <p className="text-xs font-medium uppercase muted tracking-wider">
                       Input schema
                     </p>

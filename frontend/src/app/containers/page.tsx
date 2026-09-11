@@ -276,7 +276,7 @@ export default function ContainersPage() {
           {filtered.length === 0 ? (
             <div className="py-14 text-center">
               <div
-                className="h-14 w-14 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800
+                className="h-14 w-14 mx-auto rounded-md bg-slate-100 dark:bg-white/5
                            flex items-center justify-center mb-3"
               >
                 <Boxes className="h-7 w-7 muted" />
@@ -293,7 +293,7 @@ export default function ContainersPage() {
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs font-medium muted border-b border-slate-200 dark:border-slate-800">
+                  <tr className="text-left text-xs font-medium muted border-b border-slate-200 dark:border-white/10">
                     <th className="py-3 pl-5 pr-4">Name</th>
                     <th className="py-3 pr-4">Container ID</th>
                     <th className="py-3 pr-4">Image</th>
@@ -302,7 +302,7 @@ export default function ContainersPage() {
                     <th className="py-3 pr-5 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-slate-100 dark:divide-white/10">
                   {filtered.map((c) => {
                     const shortId = c.id.slice(0, 12);
                     const running = (c.status || "").toLowerCase().includes("running");
@@ -411,7 +411,7 @@ export default function ContainersPage() {
           )}
 
           {!loading && containers.length > 0 && (
-            <div className="px-5 py-3 border-t border-slate-200 dark:border-slate-800
+            <div className="px-5 py-3 border-t border-slate-200 dark:border-white/10
                             text-xs muted flex items-center justify-between flex-wrap gap-2">
               <span>
                 Showing {filtered.length} of {containers.length} containers

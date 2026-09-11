@@ -2,12 +2,18 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Moon, Sun, LogOut, UserCircle2, Shield, Wrench } from "lucide-react";
+import { Moon, Sun, LogOut, UserCircle2, Shield, Wrench, Menu } from "lucide-react";
 import HealthBadge from "@/components/HealthBadge";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/auth";
 
-export default function TopBar({ title }: { title: string }) {
+export default function TopBar({
+  title,
+  onMenuClick,
+}: {
+  title: string;
+  onMenuClick?: () => void;
+}) {
   const { theme, toggleTheme } = useTheme();
   const { user, authEnabled, logout } = useAuth();
   const router = useRouter();
@@ -36,15 +42,25 @@ export default function TopBar({ title }: { title: string }) {
   return (
     <header
       className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4
-                 border-b border-slate-200 bg-white/80 px-6 backdrop-blur
-                 dark:border-slate-800 dark:bg-[#0b1220]/80"
+                 border-b border-slate-200 bg-white/80 px-4 sm:px-6 backdrop-blur
+                 dark:border-white/10 dark:bg-[#08090c]/80"
     >
-      <div className="flex items-center gap-3">
-        <h1 className="text-lg font-semibold heading">{title}</h1>
+      <div className="flex items-center gap-3 min-w-0">
+        <button
+          type="button"
+          onClick={onMenuClick}
+          className="btn-ghost p-1.5 -ml-1.5 lg:hidden"
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        <h1 className="text-lg font-semibold heading truncate">{title}</h1>
       </div>
 
-      <div className="flex items-center gap-3">
-        <HealthBadge />
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div className="hidden sm:block">
+          <HealthBadge />
+        </div>
 
         <button
           type="button"
@@ -65,12 +81,12 @@ export default function TopBar({ title }: { title: string }) {
             <button
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
-              className="flex items-center gap-2 rounded-lg px-2 py-1.5
-                         hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              className="flex items-center gap-2 rounded-md px-2 py-1.5
+                         hover:bg-slate-100 dark:hover:bg-white/10 transition"
             >
               <div
-                className="h-8 w-8 rounded-full bg-gradient-to-br from-brand-400 to-brand-600
-                           text-white flex items-center justify-center text-xs font-bold"
+                className="h-8 w-8 rounded-md bg-slate-900 dark:bg-white
+                           text-white dark:text-slate-900 flex items-center justify-center text-xs font-bold"
               >
                 {user.username.slice(0, 2).toUpperCase()}
               </div>
@@ -87,11 +103,11 @@ export default function TopBar({ title }: { title: string }) {
 
             {menuOpen && (
               <div
-                className="absolute right-0 mt-2 w-56 rounded-xl bg-white ring-1
-                           ring-slate-200 shadow-lg dark:bg-[#121a2b] dark:ring-slate-800
-                           overflow-hidden"
+                className="absolute right-0 mt-2 w-56 rounded-lg bg-white ring-1
+                           ring-slate-200 shadow-lg dark:bg-[#0e0f13] dark:ring-white/10
+                           overflow-hidden animate-in fade-in zoom-in-95 duration-100"
               >
-                <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800">
+                <div className="px-4 py-3 border-b border-slate-200 dark:border-white/10">
                   <div className="text-sm font-medium heading">
                     {user.username}
                   </div>
@@ -106,7 +122,7 @@ export default function TopBar({ title }: { title: string }) {
                     }}
                     className="w-full flex items-center gap-2 px-4 py-2 text-sm
                                text-slate-700 hover:bg-slate-100
-                               dark:text-slate-200 dark:hover:bg-slate-800"
+                               dark:text-slate-200 dark:hover:bg-white/5"
                   >
                     <UserCircle2 className="h-4 w-4" />
                     Profile & Settings

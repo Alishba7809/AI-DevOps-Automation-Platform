@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Play, TestTube2, AlertTriangle, Loader2, Terminal } from "lucide-react";
+import { Play, TestTube2, AlertTriangle, Loader2, ChevronRight } from "lucide-react";
 
 interface Props {
   onExecute: (
@@ -49,77 +49,91 @@ export default function CommandInput({
   }
 
   return (
-    <div className={"card hero-glow relative " + (compact ? "p-4" : "p-6")}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="flex items-center gap-2 text-sm font-medium heading mb-2">
-            <Terminal className="h-4 w-4 text-brand-500" />
-            Natural Language Command
-          </label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={command}
-              onChange={(e) => setCommand(e.target.value)}
-              placeholder='Try: "deploy nginx on port 8080" or "stop abc123"'
-              className="input text-base py-3"
-              disabled={loading}
-            />
-            <button
-              type="submit"
-              className="btn-primary px-5"
-              disabled={loading || !command.trim()}
-            >
-              {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <>
-                  <Play className="h-4 w-4" />
-                  Execute
-                </>
-              )}
-            </button>
-          </div>
+    <div className="card overflow-hidden">
+      {/* Terminal window chrome */}
+      <div className="terminal-chrome bg-slate-50 dark:bg-white/[0.02]">
+        <span className="terminal-dot bg-red-400/80" />
+        <span className="terminal-dot bg-amber-400/80" />
+        <span className="terminal-dot bg-emerald-400/80" />
+        <span className="ml-3 text-xs muted tracking-wide">mcp-router — natural language command</span>
+      </div>
+
+      <form onSubmit={handleSubmit} className={compact ? "p-4 space-y-3" : "p-5 space-y-4"}>
+        <div
+          className="flex items-center gap-2 rounded-md border border-slate-300 bg-white
+                     dark:border-white/10 dark:bg-black/40 focus-within:border-slate-400
+                     dark:focus-within:border-white/25 transition pl-3 pr-1.5 py-1.5"
+        >
+          <ChevronRight className="h-4 w-4 text-brand-500 shrink-0" />
+          <input
+            type="text"
+            value={command}
+            onChange={(e) => setCommand(e.target.value)}
+            placeholder='deploy nginx on port 8080'
+            className="flex-1 min-w-0 bg-transparent text-sm py-1.5 outline-none
+                       placeholder:text-slate-400 dark:placeholder:text-slate-600"
+            disabled={loading}
+          />
+          <button
+            type="submit"
+            className="btn-primary px-4 py-1.5 shrink-0"
+            disabled={loading || !command.trim()}
+          >
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <>
+                <Play className="h-3.5 w-3.5" />
+                Execute
+              </>
+            )}
+          </button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4">
-          <label className="flex items-center gap-2 text-sm muted cursor-pointer">
-            <input
-              type="checkbox"
-              checked={dryRun}
-              onChange={(e) => setDryRun(e.target.checked)}
-              className="rounded accent-brand-500"
-            />
-            <TestTube2 className="h-4 w-4 text-amber-500" />
-            Dry-run mode (plan only, don&apos;t execute)
-          </label>
-          <label className="flex items-center gap-2 text-sm muted cursor-pointer">
-            <input
-              type="checkbox"
-              checked={confirmDestructive}
-              onChange={(e) => setConfirmDestructive(e.target.checked)}
-              className="rounded accent-red-500"
-            />
-            <AlertTriangle className="h-4 w-4 text-red-500" />
-            Confirm destructive actions
-          </label>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setDryRun((v) => !v)}
+            className={
+              "inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md border transition " +
+              (dryRun
+                ? "border-amber-400/50 bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/30"
+                : "border-slate-200 dark:border-white/10 muted hover:border-slate-300 dark:hover:border-white/20")
+            }
+          >
+            <TestTube2 className="h-3.5 w-3.5" />
+            dry-run
+          </button>
+          <button
+            type="button"
+            onClick={() => setConfirmDestructive((v) => !v)}
+            className={
+              "inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md border transition " +
+              (confirmDestructive
+                ? "border-red-400/50 bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-300 dark:border-red-500/30"
+                : "border-slate-200 dark:border-white/10 muted hover:border-slate-300 dark:hover:border-white/20")
+            }
+          >
+            <AlertTriangle className="h-3.5 w-3.5" />
+            confirm destructive
+          </button>
         </div>
       </form>
 
       {!compact && (
-        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
-          <p className="text-xs font-medium muted mb-2 tracking-wider">
-            QUICK EXAMPLES
+        <div className="px-5 pb-5 pt-1 border-t border-slate-200 dark:border-white/10">
+          <p className="text-[10px] font-medium muted mb-2 tracking-wider uppercase pt-4">
+            Quick examples
           </p>
           <div className="flex flex-wrap gap-2">
             {SAMPLE_COMMANDS.map((sample) => (
               <button
                 key={sample}
                 onClick={() => setCommand(sample)}
-                className="text-xs px-3 py-1.5 rounded-md
-                           bg-slate-100 text-slate-700 hover:bg-brand-100 hover:text-brand-700
-                           dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-brand-500/15
-                           dark:hover:text-brand-300 transition"
+                className="text-xs px-3 py-1.5 rounded-md font-mono
+                           bg-slate-100 text-slate-700 hover:bg-slate-200
+                           dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10
+                           transition"
                 type="button"
               >
                 {sample}

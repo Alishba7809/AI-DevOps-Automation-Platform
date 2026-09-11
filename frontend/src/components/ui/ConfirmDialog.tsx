@@ -61,7 +61,7 @@ export default function ConfirmDialog({
       onClick={() => !busy && onCancel()}
     >
       <div
-        className="card w-full max-w-md p-6 animate-in fade-in zoom-in duration-150"
+        className="card w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -69,7 +69,7 @@ export default function ConfirmDialog({
         <div className="flex items-start gap-3">
           <div
             className={
-              "h-10 w-10 rounded-full flex items-center justify-center shrink-0 " +
+              "h-10 w-10 rounded-md flex items-center justify-center shrink-0 " +
               iconClass
             }
           >

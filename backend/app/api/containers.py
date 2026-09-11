@@ -15,10 +15,10 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
-from app.auth import get_current_user
+from app.auth import get_current_user, require_role
 from app.database import get_db
 from app.mcp.registry import tool_registry
-from app.models import Result, Task, TaskStatus, User
+from app.models import Result, Task, TaskStatus, User, UserRole
 from app.safety import audit_log
 from app.tools.base import ToolResult
 
@@ -104,7 +104,7 @@ def stop_container_by_id(
     container_id: str,
     request: Request,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_role(UserRole.DEVELOPER)),
 ):
     if not container_id or len(container_id) < 3:
         raise HTTPException(status_code=400, detail="Invalid container identifier")
@@ -133,7 +133,7 @@ def remove_container_by_id(
     container_id: str,
     request: Request,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_role(UserRole.DEVELOPER)),
 ):
     if not container_id or len(container_id) < 3:
         raise HTTPException(status_code=400, detail="Invalid container identifier")

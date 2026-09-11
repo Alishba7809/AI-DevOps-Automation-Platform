@@ -47,7 +47,7 @@ function ThemeButton({
         "flex flex-col items-center gap-2 p-4 rounded-xl border transition " +
         (active
           ? "border-brand-500 bg-brand-50 text-brand-700 shadow-sm dark:bg-brand-500/10 dark:text-brand-300"
-          : "border-slate-200 hover:border-slate-300 muted dark:border-slate-800 dark:hover:border-slate-700")
+          : "border-slate-200 hover:border-slate-300 muted dark:border-white/10 dark:hover:border-white/20")
       }
     >
       <Icon className="h-5 w-5" />
@@ -93,7 +93,7 @@ export default function SettingsPage() {
 
           {user ? (
             <div className="flex items-center gap-4">
-              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 text-white flex items-center justify-center text-xl font-bold shadow-glow">
+              <div className="h-16 w-16 rounded-md bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center text-xl font-bold">
                 {user.username.slice(0, 2).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
@@ -223,7 +223,7 @@ export default function SettingsPage() {
               removes the token from this device.
             </p>
           </div>
-          <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
+          <div className="pt-4 border-t border-slate-200 dark:border-white/10">
             <div className="flex items-center gap-2 mb-2">
               <Info className="h-4 w-4 text-brand-500" />
               <h2 className="font-semibold heading">About</h2>

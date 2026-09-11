@@ -79,7 +79,7 @@ export default function TaskHistory({
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead>
-                <tr className="text-left text-xs font-medium muted border-b border-slate-200 dark:border-slate-800">
+                <tr className="text-left text-xs font-medium muted border-b border-slate-200 dark:border-white/10">
                   <th className="py-3 pl-5 pr-4">#</th>
                   <th className="py-3 pr-4">Command</th>
                   <th className="py-3 pr-4">Intent</th>
@@ -89,7 +89,7 @@ export default function TaskHistory({
                   <th className="py-3 pr-5">Time</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-slate-100 dark:divide-white/10">
                 {tasks.map((t) => (
                   <tr
                     key={t.id}

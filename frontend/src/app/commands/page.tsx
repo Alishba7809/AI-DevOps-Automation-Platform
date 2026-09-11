@@ -59,13 +59,13 @@ export default function CommandsPage() {
     <DashboardShell title="Commands">
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
         <div className="xl:col-span-2 space-y-5">
-          <div className="card p-5">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center shadow-glow">
-                <Terminal className="h-5 w-5" />
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-9 w-9 rounded-md bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center">
+                <Terminal className="h-4 w-4" />
               </div>
               <div>
-                <h2 className="font-semibold heading">Natural-language command runner</h2>
+                <h2 className="font-semibold heading text-sm">Natural-language command runner</h2>
                 <p className="text-xs muted">
                   The MCP router selects a tool, verifies safety, and executes.
                 </p>

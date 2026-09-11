@@ -142,7 +142,7 @@ export default function ResultsDisplay({ response }: Props) {
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800/50 dark:ring-1 dark:ring-slate-800">
+    <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800/50 dark:ring-1 dark:ring-white/10">
       <p className="text-xs uppercase font-medium muted tracking-wider">{label}</p>
       <p className="mt-1 font-mono text-sm heading break-all">{value}</p>
     </div>

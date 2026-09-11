@@ -9,7 +9,7 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  font-family: Inter, system-ui, -apple-system, sans-serif;
+  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
 html.dark {
@@ -18,10 +18,11 @@ html.dark {
 
 body {
   @apply bg-slate-50 text-slate-900 antialiased transition-colors duration-200;
+  font-feature-settings: "liga" 0;
 }
 
 html.dark body {
-  @apply bg-[#060a14] text-slate-100;
+  @apply bg-[#08090c] text-slate-100;
 }
 
 /* Thin scrollbars */
@@ -44,12 +45,12 @@ html.dark ::-webkit-scrollbar-thumb {
    ===================================================================== */
 @layer components {
   .card {
-    @apply rounded-xl bg-white ring-1 ring-slate-200/80 shadow-card
-           dark:bg-[#121a2b] dark:ring-slate-800/80 transition-colors;
+    @apply rounded-lg bg-white ring-1 ring-slate-200/80 shadow-card
+           dark:bg-[#0e0f13] dark:ring-white/10 transition-colors;
   }
 
   .card-header {
-    @apply px-5 py-4 border-b border-slate-200/80 dark:border-slate-800/80
+    @apply px-5 py-4 border-b border-slate-200/80 dark:border-white/10
            flex items-center justify-between;
   }
 
@@ -63,39 +64,41 @@ html.dark ::-webkit-scrollbar-thumb {
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2
-           text-sm font-medium transition focus:outline-none focus:ring-2
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2
+           text-sm font-medium tracking-tight transition focus:outline-none focus:ring-2
+           focus:ring-offset-1 dark:focus:ring-offset-[#08090c]
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-primary {
-    @apply btn bg-brand-500 text-white hover:bg-brand-600
-           focus:ring-brand-400 shadow-sm;
+    @apply btn bg-slate-900 text-white hover:bg-slate-700
+           focus:ring-slate-400
+           dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 dark:focus:ring-white/40;
   }
 
   .btn-secondary {
-    @apply btn bg-slate-100 text-slate-700 hover:bg-slate-200
-           dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700
-           focus:ring-slate-300 dark:focus:ring-slate-600;
+    @apply btn bg-slate-100 text-slate-700 hover:bg-slate-200 ring-1 ring-slate-200
+           dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10 dark:ring-white/10
+           focus:ring-slate-300 dark:focus:ring-white/20;
   }
 
   .btn-danger {
-    @apply btn bg-red-500 text-white hover:bg-red-600
+    @apply btn bg-red-600 text-white hover:bg-red-500
            focus:ring-red-400;
   }
 
   .btn-ghost {
     @apply btn text-slate-600 hover:bg-slate-100
-           dark:text-slate-300 dark:hover:bg-slate-800
-           focus:ring-slate-300 dark:focus:ring-slate-600;
+           dark:text-slate-300 dark:hover:bg-white/10
+           focus:ring-slate-300 dark:focus:ring-white/20;
   }
 
   .input {
-    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2
+    @apply w-full rounded-md border border-slate-300 bg-white px-3 py-2
            text-sm text-slate-900 placeholder:text-slate-400
-           focus:border-brand-400 focus:ring-2 focus:ring-brand-200 focus:outline-none
-           dark:border-slate-700 dark:bg-[#0f172a] dark:text-slate-100
-           dark:placeholder:text-slate-500 dark:focus:ring-brand-900/60
+           focus:border-slate-400 focus:ring-2 focus:ring-slate-200 focus:outline-none
+           dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-100
+           dark:placeholder:text-slate-500 dark:focus:border-white/25 dark:focus:ring-white/10
            transition;
   }
 
@@ -107,33 +110,27 @@ html.dark ::-webkit-scrollbar-thumb {
   .chip {
     @apply inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5
            text-xs font-medium text-slate-700 font-mono
-           dark:bg-slate-800 dark:text-slate-300;
+           dark:bg-white/5 dark:text-slate-300 dark:ring-1 dark:ring-white/10;
   }
 
   .sidebar-link {
-    @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium
+    @apply flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium
            text-slate-600 hover:bg-slate-100 hover:text-slate-900
-           dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100
+           dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-100
            transition;
   }
 
   .sidebar-link.active {
-    @apply bg-brand-50 text-brand-700 hover:bg-brand-100
-           dark:bg-brand-500/10 dark:text-brand-300 dark:hover:bg-brand-500/15;
+    @apply bg-slate-900 text-white hover:bg-slate-900 hover:text-white
+           dark:bg-white dark:text-slate-900 dark:hover:bg-white dark:hover:text-slate-900;
   }
 
   .stat-card {
     @apply card p-5 relative overflow-hidden;
   }
 
-  .hero-glow::before {
-    content: "";
-    @apply absolute -top-24 -right-16 h-64 w-64 rounded-full
-           bg-brand-400/10 blur-3xl pointer-events-none;
-  }
-
   .divide-subtle > * + * {
-    @apply border-t border-slate-200/80 dark:border-slate-800/80;
+    @apply border-t border-slate-200/80 dark:border-white/10;
   }
 
   .muted {
@@ -146,22 +143,53 @@ html.dark ::-webkit-scrollbar-thumb {
 
   /* Syntax-highlight-ish JSON viewer */
   .json-viewer {
-    @apply font-mono text-xs rounded-lg bg-slate-50 p-3 overflow-x-auto
-           dark:bg-slate-900/70 dark:text-slate-300 leading-6;
+    @apply font-mono text-xs rounded-md bg-slate-50 p-3 overflow-x-auto
+           dark:bg-black/40 dark:text-slate-300 dark:ring-1 dark:ring-white/10 leading-6;
+  }
+
+  /* Terminal window chrome — used on the command bar & code blocks */
+  .terminal-chrome {
+    @apply flex items-center gap-1.5 px-4 py-2.5 border-b border-slate-200 dark:border-white/10;
+  }
+
+  .terminal-dot {
+    @apply h-2.5 w-2.5 rounded-full;
   }
 }
 
-/* Grid background for auth pages */
+/* Grid background for auth pages & hero sections — Nia-style dark grid */
 .auth-bg {
   background-color: #f8fafc;
   background-image:
-    radial-gradient(at 0% 0%, rgba(59, 139, 253, 0.08) 0px, transparent 60%),
-    radial-gradient(at 100% 0%, rgba(37, 102, 240, 0.06) 0px, transparent 50%);
+    linear-gradient(to right, rgb(148 163 184 / 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(148 163 184 / 0.12) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: center top;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
 }
 
 html.dark .auth-bg {
-  background-color: #060a14;
+  background-color: #08090c;
   background-image:
-    radial-gradient(at 0% 0%, rgba(59, 139, 253, 0.18) 0px, transparent 60%),
-    radial-gradient(at 100% 100%, rgba(37, 102, 240, 0.12) 0px, transparent 50%);
+    linear-gradient(to right, rgb(255 255 255 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: center top;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+}
+
+.grid-panel {
+  background-image:
+    linear-gradient(to right, rgb(148 163 184 / 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(148 163 184 / 0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+html.dark .grid-panel {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+  background-size: 28px 28px;
 }

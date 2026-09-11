@@ -7,6 +7,7 @@ from app.safety.guardrails import (
     rate_limiter,
 )
 from app.safety.audit import audit_log
+from app.safety.rbac import VIEWER_ALLOWED_INTENTS, can_execute_intent
 
 __all__ = [
     "SafetyCheck",
@@ -14,4 +15,6 @@ __all__ = [
     "guardrails",
     "rate_limiter",
     "audit_log",
+    "VIEWER_ALLOWED_INTENTS",
+    "can_execute_intent",
 ]

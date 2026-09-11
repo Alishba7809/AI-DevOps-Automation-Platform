@@ -1,4 +1,6 @@
-"""JWT authentication utilities and FastAPI dependencies."""
+"""JWT authentication utilities, role checks, and FastAPI dependencies."""
+
+from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional
@@ -30,100 +32,144 @@ def verify_password(plain: str, hashed: str) -> bool:
 # ---------------------------------------------------------------------
 # JWT helpers
 # ---------------------------------------------------------------------
-def create_access_token(subject: str, role: str, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(
+    subject: str,
+    role: str,
+    expires_delta: Optional[timedelta] = None,
+) -> str:
     """Create a signed JWT access token."""
-    expire = datetime.now(timezone.utc) + (
+    now = datetime.now(timezone.utc)
+    expire = now + (
         expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     payload = {
         "sub": subject,
         "role": role,
         "exp": expire,
-        "iat": datetime.now(timezone.utc),
+        "iat": now,
     }
     return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
 def decode_token(token: str) -> dict:
+    """Decode and validate a JWT or raise a standard 401 response."""
     try:
         return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     except JWTError as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid token: {exc}",
+            detail="Invalid or expired authentication token",
+            headers={"WWW-Authenticate": "Bearer"},
+        ) from exc
+
+
+# ---------------------------------------------------------------------
+# FastAPI dependencies
+# ---------------------------------------------------------------------
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
+
+
+def _lookup_token_user(token: str, db: Session) -> User:
+    """Resolve a valid token to an active database user.
+
+    The role embedded in the JWT is informational only. Authorization always
+    uses the current role stored in the database, so role changes take effect
+    without waiting for old tokens to expire.
+    """
+    payload = decode_token(token)
+    username = payload.get("sub")
+    if not username or not isinstance(username, str):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication token is missing a subject",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User no longer exists",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is disabled")
+    return user
 
-# ---------------------------------------------------------------------
-# FastAPI dependency
-# ---------------------------------------------------------------------
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
+
+def _get_or_create_system_user(db: Session) -> User:
+    """Return the implicit admin used only when authentication is disabled."""
+    user = db.query(User).filter(User.username == "system").first()
+    if user:
+        return user
+
+    user = User(
+        username="system",
+        email="system@local",
+        hashed_password=hash_password("system"),
+        role=UserRole.ADMIN,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 
 
 def get_current_user_optional(
     token: str | None = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ) -> User | None:
-    """Return user if a valid token is provided; otherwise None.
+    """Return the authenticated user when a Bearer token is supplied.
 
-    Used when auth is optional (ENABLE_AUTH=False).
+    Missing credentials are allowed, which is useful for the registration
+    bootstrap flow. A supplied but invalid token is *not* silently treated as
+    anonymous; it returns 401 to prevent authentication downgrade bugs.
     """
     if not token:
         return None
-    try:
-        payload = decode_token(token)
-        username = payload.get("sub")
-        if not username:
-            return None
-        return db.query(User).filter(User.username == username).first()
-    except HTTPException:
-        return None
+    return _lookup_token_user(token, db)
 
 
 def get_current_user(
     token: str | None = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ) -> User:
-    """Require a valid JWT; raise 401 if missing or invalid."""
-    if not settings.ENABLE_AUTH:
-        # Auth disabled globally — return a system user placeholder if exists
-        user = db.query(User).filter(User.username == "system").first()
-        if user:
-            return user
-        # Create an implicit system user on first access
-        user = User(
-            username="system",
-            email="system@local",
-            hashed_password=hash_password("system"),
-            role=UserRole.ADMIN,
-        )
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-        return user
+    """Return the current user, enforcing JWT when authentication is enabled.
 
-    if not token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    payload = decode_token(token)
-    user = db.query(User).filter(User.username == payload.get("sub")).first()
-    if not user or not user.is_active:
-        raise HTTPException(status_code=401, detail="User not found or inactive")
-    return user
+    With ``ENABLE_AUTH=false`` the application behaves as a single-user demo
+    and transparently uses an implicit ``system`` administrator. If a token is
+    explicitly supplied even in demo mode, it is still validated normally.
+    """
+    if token:
+        return _lookup_token_user(token, db)
+
+    if not settings.ENABLE_AUTH:
+        return _get_or_create_system_user(db)
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Not authenticated",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
 
 
 def require_role(*allowed_roles: UserRole):
-    """Dependency factory enforcing role-based access."""
+    """Dependency factory enforcing role-based access.
+
+    ADMIN is always permitted. Pass the minimum non-admin roles that should
+    also be allowed, for example ``require_role(UserRole.DEVELOPER)``.
+    """
+
+    allowed = set(allowed_roles)
 
     def _checker(user: User = Depends(get_current_user)) -> User:
-        if user.role not in allowed_roles and user.role != UserRole.ADMIN:
+        if user.role != UserRole.ADMIN and user.role not in allowed:
             raise HTTPException(
-                status_code=403,
-                detail=f"Requires role(s): {[r.value for r in allowed_roles]}",
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=(
+                    "Insufficient permissions. Requires one of: "
+                    + ", ".join(sorted(role.value for role in allowed | {UserRole.ADMIN}))
+                ),
             )
         return user
 

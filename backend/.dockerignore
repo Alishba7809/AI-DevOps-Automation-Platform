@@ -14,4 +14,3 @@ venv
 *.egg-info
 .git
 .gitignore
-tests

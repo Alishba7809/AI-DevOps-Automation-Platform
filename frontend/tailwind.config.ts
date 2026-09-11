@@ -35,8 +35,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+        sans: ["JetBrains Mono", "ui-monospace", "SF Mono", "Menlo", "monospace"],
+        mono: ["JetBrains Mono", "ui-monospace", "SF Mono", "Menlo", "monospace"],
       },
       boxShadow: {
         glow: "0 0 40px -8px rgba(59, 139, 253, 0.35)",
@@ -56,9 +56,14 @@ const config: Config = {
           "100%": { backgroundPosition: "1000px 0" },
         },
       },
+      borderRadius: {
+        lg: "0.5rem",
+        xl: "0.625rem",
+        "2xl": "0.75rem",
+      },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 };
 
 export default config;

@@ -6,7 +6,7 @@ import logging
 import re
 import time
 from collections import defaultdict, deque
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Deque
 
 from app.config import settings
@@ -24,20 +24,23 @@ class SafetyError(Exception):
 class SafetyCheck:
     allowed: bool
     reason: str = ""
-    warnings: list[str] = None  # type: ignore[assignment]
+    warnings: list[str] = field(default_factory=list)
     require_confirmation: bool = False
 
 
 # ---------------------------------------------------------------------
 # Blocked / banned token list
 # ---------------------------------------------------------------------
+# These patterns target shell-level commands that could damage the host or
+# destroy a filesystem. The trailing checks intentionally use whitespace/end
+# rather than ``\b`` because paths such as '/' end in a non-word character.
 BANNED_TOKENS = [
-    r"\brm\s+-rf\s+/\b",
+    r"(?:^|\s)rm\s+(?:-[A-Za-z]*r[A-Za-z]*f[A-Za-z]*|-[A-Za-z]*f[A-Za-z]*r[A-Za-z]*)\s+(?:--\s+)?/(?:\s|$)",
     r":\s*\(\s*\)\s*\{.*\}\s*;.*:\s*&",  # fork bomb
-    r"\bmkfs\.",  # filesystem formatting
-    r"\bdd\s+if=.*of=/dev/",  # disk writes
-    r"\bchmod\s+-R\s+777\s+/\b",
-    r"\s>\s+/dev/sd[a-z]",
+    r"\bmkfs(?:\.[A-Za-z0-9_-]+)?\b",  # filesystem formatting
+    r"\bdd\s+if=.*\bof=/dev/",  # raw disk writes
+    r"\bchmod\s+-R\s+777\s+/(?:\s|$)",
+    r"(?:^|\s)>\s*/dev/sd[a-z](?:\s|$)",
 ]
 BANNED_RE = [re.compile(p, re.IGNORECASE) for p in BANNED_TOKENS]
 
@@ -46,11 +49,14 @@ class Guardrails:
     """Evaluates whether a natural-language command is safe to execute."""
 
     def check(
-        self, command: str, intent: IntentResult, confirm_destructive: bool = False
+        self,
+        command: str,
+        intent: IntentResult,
+        confirm_destructive: bool = False,
     ) -> SafetyCheck:
         warnings: list[str] = []
 
-        # 1. Banned tokens
+        # 1. Banned shell patterns are always rejected.
         for rex in BANNED_RE:
             if rex.search(command):
                 return SafetyCheck(
@@ -62,18 +68,19 @@ class Guardrails:
                     warnings=warnings,
                 )
 
-        # 2. Unknown intent
+        # 2. Unknown intent: warn; the MCP router will provide the final
+        # user-facing explanation.
         if intent.intent == "unknown":
             warnings.append("Intent could not be determined from the input.")
 
-        # 3. Low confidence warning
+        # 3. Low confidence warning.
         if 0 < intent.confidence < 0.45:
             warnings.append(
                 f"Low-confidence intent match ({intent.confidence:.2f}). "
                 "Double-check the action."
             )
 
-        # 4. Destructive operations require explicit user confirmation
+        # 4. Destructive operations require explicit user confirmation.
         if (
             intent_engine.is_destructive(intent.intent)
             and settings.REQUIRE_CONFIRM_DESTRUCTIVE
@@ -89,7 +96,7 @@ class Guardrails:
                 require_confirmation=True,
             )
 
-        return SafetyCheck(allowed=True, reason="", warnings=warnings)
+        return SafetyCheck(allowed=True, warnings=warnings)
 
 
 guardrails = Guardrails()
@@ -100,11 +107,15 @@ guardrails = Guardrails()
 # ---------------------------------------------------------------------
 class RateLimiter:
     def __init__(self, limit_per_minute: int | None = None) -> None:
-        self.limit = limit_per_minute or settings.MAX_EXECUTIONS_PER_MINUTE
+        self.limit = (
+            settings.MAX_EXECUTIONS_PER_MINUTE
+            if limit_per_minute is None
+            else limit_per_minute
+        )
         self._buckets: dict[str, Deque[float]] = defaultdict(deque)
 
     def allow(self, key: str) -> tuple[bool, int]:
-        """Return (allowed, remaining). Evicts old entries."""
+        """Return ``(allowed, remaining)`` after evicting entries older than 60s."""
         now = time.monotonic()
         window_start = now - 60
         bucket = self._buckets[key]
@@ -114,6 +125,13 @@ class RateLimiter:
             return False, 0
         bucket.append(now)
         return True, self.limit - len(bucket)
+
+    def reset(self, key: str | None = None) -> None:
+        """Clear rate-limit state. Primarily useful for tests/admin tooling."""
+        if key is None:
+            self._buckets.clear()
+        else:
+            self._buckets.pop(key, None)
 
 
 rate_limiter = RateLimiter()
