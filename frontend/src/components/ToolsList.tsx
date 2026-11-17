@@ -75,8 +75,8 @@ export default function ToolsList({
             <div
               key={tool.name}
               className="group rounded-xl border border-slate-200 p-4 hover:border-brand-400 hover:shadow-md
-                         transition bg-white
-                         dark:bg-slate-900/40 dark:border-white/10 dark:hover:border-brand-500/40"
+                         transition bg-surface-light
+                         dark:bg-slate-900/40 dark:border-slate-800 dark:hover:border-brand-500/40"
             >
               <div className="flex items-start gap-3">
                 <div

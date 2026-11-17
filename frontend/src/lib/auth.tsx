@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [authEnabled, setAuthEnabled] = useState(true);
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (requireUser = false) => {
     setLoading(true);
     try {
       const me = await fetchMe();
@@ -60,7 +60,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null);
       } else {
         setUser(null);
-        setToken(null);
+        // The API client clears an invalid token on 401. Keep it for temporary
+        // network failures, so a retry can recover without signing in again.
+        if (requireUser) {
+          throw new Error(`Signed in, but could not load your account: ${msg}`);
+        }
       }
     } finally {
       setLoading(false);
@@ -80,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(
     async (username: string, password: string) => {
       await apiLogin(username, password);
-      await refresh();
+      await refresh(true);
     },
     [refresh]
   );
@@ -94,7 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }) => {
       await apiRegister(payload);
       await apiLogin(payload.username, payload.password);
-      await refresh();
+      await refresh(true);
     },
     [refresh]
   );

@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import Sidebar, { MobileSidebar } from "./Sidebar";
+import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
 import { useRequireAuth } from "@/lib/auth";
 import { Loader2 } from "lucide-react";
@@ -14,7 +13,6 @@ export default function DashboardShell({
   children: React.ReactNode;
 }) {
   const { user, loading, authEnabled } = useRequireAuth();
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   if (loading) {
     return (
@@ -35,10 +33,9 @@ export default function DashboardShell({
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <MobileSidebar open={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
       <div className="flex-1 min-w-0">
-        <TopBar title={title} onMenuClick={() => setMobileNavOpen(true)} />
-        <main className="p-4 sm:p-6 max-w-screen-2xl mx-auto">{children}</main>
+        <TopBar title={title} />
+        <main className="p-6 max-w-screen-2xl mx-auto">{children}</main>
       </div>
     </div>
   );

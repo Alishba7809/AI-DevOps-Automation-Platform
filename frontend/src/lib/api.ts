@@ -190,11 +190,17 @@ export async function login(
   const form = new URLSearchParams();
   form.set("username", username);
   form.set("password", password);
-  const res = await fetch(`${BASE}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: form.toString(),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${BASE}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: form.toString(),
+    });
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err);
+    throw new Error(`Cannot reach the backend at ${BASE}: ${detail}`);
+  }
   if (!res.ok) {
     let msg = `HTTP ${res.status}`;
     try {
@@ -223,7 +229,15 @@ export async function register(payload: {
 }
 
 export async function fetchMe(): Promise<User> {
-  return request<User>("/auth/me");
+  // A stalled backend must not leave the initial dashboard loader on screen
+  // indefinitely. AuthProvider handles this failure and opens the login page.
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+  try {
+    return await request<User>("/auth/me", { signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export function logout() {

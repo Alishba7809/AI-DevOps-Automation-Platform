@@ -15,9 +15,9 @@ const STATUS_COLORS: Record<string, string> = {
   blocked:
     "bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:ring-amber-500/20",
   dry_run:
-    "bg-indigo-50 text-indigo-700 ring-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-300 dark:ring-indigo-500/20",
+    "bg-brand-50 text-brand-700 ring-brand-200 dark:bg-brand-500/10 dark:text-brand-300 dark:ring-brand-500/20",
   running:
-    "bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-500/10 dark:text-blue-300 dark:ring-blue-500/20",
+    "bg-brand-50 text-brand-700 ring-brand-200 dark:bg-brand-500/10 dark:text-brand-300 dark:ring-brand-500/20",
   pending: "bg-slate-50 text-slate-700 ring-slate-200 dark:bg-slate-800 dark:text-slate-300",
 };
 
@@ -120,7 +120,7 @@ export default function ResultsDisplay({ response }: Props) {
             <p className="text-xs font-medium uppercase muted mb-1 tracking-wider">
               Result Data
             </p>
-            <pre className="rounded-lg bg-slate-900 text-slate-100 p-4 text-xs font-mono overflow-auto max-h-80 dark:bg-slate-950">
+            <pre className="rounded-lg terminal-panel p-4 text-xs font-mono overflow-auto max-h-80">
               {JSON.stringify(response.result.data, null, 2)}
             </pre>
           </div>
@@ -131,7 +131,7 @@ export default function ResultsDisplay({ response }: Props) {
           <p className="text-xs font-medium uppercase muted mb-1 tracking-wider">
             Output
           </p>
-          <pre className="rounded-lg bg-slate-900 text-green-300 p-4 text-xs font-mono overflow-auto max-h-80 dark:bg-slate-950">
+          <pre className="rounded-lg terminal-panel p-4 text-xs font-mono overflow-auto max-h-80">
             {response.result.stdout}
           </pre>
         </div>
@@ -142,7 +142,7 @@ export default function ResultsDisplay({ response }: Props) {
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800/50 dark:ring-1 dark:ring-white/10">
+    <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800/50 dark:ring-1 dark:ring-slate-800">
       <p className="text-xs uppercase font-medium muted tracking-wider">{label}</p>
       <p className="mt-1 font-mono text-sm heading break-all">{value}</p>
     </div>

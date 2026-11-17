@@ -58,11 +58,11 @@ function StatCard({
         </div>
         <div
           className={
-            "h-10 w-10 rounded-md flex items-center justify-center shrink-0 " +
+            "h-11 w-11 rounded-xl flex items-center justify-center shrink-0 " +
             accent
           }
         >
-          <Icon className="h-[18px] w-[18px]" />
+          <Icon className="h-5 w-5" />
         </div>
       </div>
     </div>
@@ -140,23 +140,30 @@ export default function HomePage() {
     <DashboardShell title="Dashboard">
       <div className="space-y-6">
         {/* Hero */}
-        <section className="relative rounded-lg overflow-hidden p-6 md:p-8
-                            bg-slate-900 dark:bg-[#0b0c10] text-white grid-panel
-                            border border-slate-800 dark:border-white/10">
-          <div className="relative z-10 max-w-3xl">
-            <div className="inline-flex items-center gap-1.5 text-xs font-medium bg-white/10
-                            px-2.5 py-1 rounded-md mb-3 ring-1 ring-white/10">
-              <Sparkles className="h-3 w-3 text-brand-400" />
-              natural-language devops automation
+        <section className="dashboard-hero relative rounded-2xl overflow-hidden p-6 md:p-8
+                            text-white shadow-glow">
+          <div className="relative z-10 md:max-w-[68%]">
+            <div className="inline-flex items-center gap-1 text-xs font-medium bg-white/15
+                            px-2.5 py-1 rounded-full mb-3 backdrop-blur">
+              <Sparkles className="h-3 w-3" />
+              Natural-language DevOps automation
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold leading-tight tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-bold leading-tight">
               Ship, inspect and operate your stack with one sentence.
             </h2>
-            <p className="mt-2 text-sm md:text-base text-slate-300 max-w-2xl">
+            <p className="mt-2 text-sm md:text-base text-white/85 max-w-2xl">
               Type what you want in plain English — the MCP router picks the right
               tool and runs it safely with dry-run and destructive-action confirmation.
             </p>
           </div>
+          <div
+            className="pointer-events-none absolute -right-20 -bottom-20 h-64 w-64
+                       rounded-full bg-white/10 blur-3xl"
+          />
+          <div
+            className="pointer-events-none absolute right-10 top-4 h-32 w-32
+                       rounded-full bg-white/10 blur-2xl"
+          />
         </section>
 
         {/* Stat grid */}
@@ -180,7 +187,7 @@ export default function HomePage() {
             value={stats.managedContainers}
             sub={`of ${stats.totalContainers} total running`}
             icon={Boxes}
-            accent="bg-indigo-100 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300"
+            accent="bg-brand-100 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300"
           />
           <StatCard
             label="MCP tools"
@@ -251,9 +258,9 @@ export default function HomePage() {
 
             <div className="card p-5">
               <div className="flex items-center gap-2 mb-3">
-                <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600
+                <div className="h-8 w-8 rounded-lg bg-brand-50 text-brand-600
                                 flex items-center justify-center
-                                dark:bg-indigo-500/15 dark:text-indigo-300">
+                                dark:bg-brand-500/15 dark:text-brand-300">
                   <Activity className="h-4 w-4" />
                 </div>
                 <div>

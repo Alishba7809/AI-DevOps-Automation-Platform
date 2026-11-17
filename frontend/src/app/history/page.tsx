@@ -17,8 +17,8 @@ const STATUS_PILL: Record<string, string> = {
   success: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300",
   failed: "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300",
   blocked: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
-  dry_run: "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300",
-  running: "bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300",
+  dry_run: "bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300",
+  running: "bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300",
   pending: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
 };
 
@@ -124,7 +124,7 @@ export default function HistoryPage() {
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs font-medium muted border-b border-slate-200 dark:border-white/10">
+                  <tr className="text-left text-xs font-medium muted border-b border-slate-200 dark:border-slate-800">
                     <th className="py-3 pl-5 pr-4">#</th>
                     <th className="py-3 pr-4">Command</th>
                     <th className="py-3 pr-4">Intent</th>
@@ -135,7 +135,7 @@ export default function HistoryPage() {
                     <th className="py-3 pr-5">Error</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-white/10">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filtered.map((t) => (
                     <tr
                       key={t.id}
@@ -183,7 +183,7 @@ export default function HistoryPage() {
           )}
 
           {total > 0 && (
-            <div className="px-5 py-3 border-t border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
+            <div className="px-5 py-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
               <span className="muted">
                 Page {page} of {totalPages} · {total} total tasks
               </span>

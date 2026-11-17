@@ -35,8 +35,8 @@ function statusTone(status: string) {
   if (s.includes("paused"))
     return "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300";
   if (s.includes("restart"))
-    return "bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300";
-  return "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300";
+    return "bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300";
+  return "bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300";
 }
 
 function formatPorts(ports: unknown): string {
@@ -212,7 +212,7 @@ export default function ContainersPage() {
                     className={
                       "text-xs px-2 py-1 rounded-md capitalize transition " +
                       (filter === f
-                        ? "bg-white shadow-sm heading dark:bg-slate-900"
+                        ? "bg-surface-light shadow-sm heading dark:bg-slate-900"
                         : "muted hover:text-slate-900 dark:hover:text-slate-100")
                     }
                   >
@@ -276,7 +276,7 @@ export default function ContainersPage() {
           {filtered.length === 0 ? (
             <div className="py-14 text-center">
               <div
-                className="h-14 w-14 mx-auto rounded-md bg-slate-100 dark:bg-white/5
+                className="h-14 w-14 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800
                            flex items-center justify-center mb-3"
               >
                 <Boxes className="h-7 w-7 muted" />
@@ -293,7 +293,7 @@ export default function ContainersPage() {
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs font-medium muted border-b border-slate-200 dark:border-white/10">
+                  <tr className="text-left text-xs font-medium muted border-b border-slate-200 dark:border-slate-800">
                     <th className="py-3 pl-5 pr-4">Name</th>
                     <th className="py-3 pr-4">Container ID</th>
                     <th className="py-3 pr-4">Image</th>
@@ -302,7 +302,7 @@ export default function ContainersPage() {
                     <th className="py-3 pr-5 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-white/10">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filtered.map((c) => {
                     const shortId = c.id.slice(0, 12);
                     const running = (c.status || "").toLowerCase().includes("running");
@@ -411,7 +411,7 @@ export default function ContainersPage() {
           )}
 
           {!loading && containers.length > 0 && (
-            <div className="px-5 py-3 border-t border-slate-200 dark:border-white/10
+            <div className="px-5 py-3 border-t border-slate-200 dark:border-slate-800
                             text-xs muted flex items-center justify-between flex-wrap gap-2">
               <span>
                 Showing {filtered.length} of {containers.length} containers

@@ -20,7 +20,7 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-const STORAGE_KEY = "devops-mcp-theme";
+const STORAGE_KEY = "devops-mcp-theme-navy";
 
 function applyTheme(theme: Theme) {
   const root = document.documentElement;
@@ -39,9 +39,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const initial: Theme =
       stored === "light" || stored === "dark"
         ? stored
-        : window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light";
+        : "dark";
     setThemeState(initial);
     applyTheme(initial);
   }, []);
@@ -74,4 +72,4 @@ export function useTheme() {
 }
 
 /** Inline script to set theme BEFORE hydration — prevents flash. */
-export const NO_FLASH_SCRIPT = `(function(){try{var t=localStorage.getItem('${STORAGE_KEY}');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`;
+export const NO_FLASH_SCRIPT = `(function(){try{if(localStorage.getItem('${STORAGE_KEY}')!=='light')document.documentElement.classList.add('dark');}catch(e){document.documentElement.classList.add('dark');}})();`;

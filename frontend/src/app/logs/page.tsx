@@ -279,7 +279,7 @@ export default function LogsPage() {
 
           <div
             ref={scrollerRef}
-            className="bg-slate-950 text-slate-100 font-mono text-xs p-4 h-[30rem] overflow-auto"
+            className="terminal-panel font-mono text-xs p-4 h-[30rem] overflow-auto"
           >
             {lines.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full gap-2 text-slate-500">
@@ -296,7 +296,7 @@ export default function LogsPage() {
                       ? "text-red-400"
                       : l.kind === "info"
                         ? "text-brand-300"
-                        : "text-green-300")
+                        : "text-emerald-300")
                   }
                 >
                   <span className="text-slate-500">[{l.ts}] </span>
